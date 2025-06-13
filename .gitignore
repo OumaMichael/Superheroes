@@ -1,0 +1,21 @@
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore environment files
+venv/
+.env
+
+# Ignore Postman collections if needed
+*.postman_collection.json
+
+# Ignore IDE config files
+.vscode/
+.idea/
+
+# Ignore database files
+*.db
+
+# Ignore node_modules (if applicable)
+node_modules/
+
