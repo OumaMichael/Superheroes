@@ -13,8 +13,7 @@ venv/
 .vscode/
 .idea/
 
-# Ignore database files
-*.db
+
 
 # Ignore node_modules (if applicable)
 node_modules/
