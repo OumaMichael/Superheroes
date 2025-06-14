@@ -1,222 +1,119 @@
-# Superhero API - Challenge 2
+# Superheroes API
 
-A Flask REST API for managing superheroes and their powers, built to match the provided Postman collection requirements.
+A Flask REST API for managing superheroes and their powers.
 
 ## Features
 
-- **Heroes Management**: List heroes and get individual hero details with powers
-- **Powers Management**: List powers, get individual powers, and update power descriptions
-- **Hero-Power Relationships**: Create relationships between heroes and powers
-- **Data Validation**: Robust validation for all inputs
-- **RESTful Design**: Follows REST conventions
-
-## Database Schema
-
-The application uses three main models:
-
-- **Hero**: Stores hero information (id, name, super_name)
-- **Power**: Stores power information (id, name, description)
-- **HeroPower**: Junction table linking heroes to powers with strength levels
-
-## API Endpoints (Matching Postman Collection)
-
-### 1. GET /heroes
-Returns a list of all heroes with basic information.
-
-**Response Format:**
-\`\`\`json
-[
-  {
-    "id": 1,
-    "name": "Kamala Khan",
-    "super_name": "Ms. Marvel"
-  }
-]
-\`\`\`
-
-### 2. GET /heroes/<int:id>
-Returns detailed information about a specific hero including their powers.
-
-**Response Format:**
-\`\`\`json
-{
-  "id": 1,
-  "name": "Kamala Khan",
-  "super_name": "Ms. Marvel",
-  "hero_powers": [
-    {
-      "id": 1,
-      "hero_id": 1,
-      "power_id": 2,
-      "strength": "Strong",
-      "power": {
-        "id": 2,
-        "name": "flight",
-        "description": "gives the wielder the ability to fly through the skies at supersonic speed"
-      }
-    }
-  ]
-}
-\`\`\`
-
-### 3. GET /powers
-Returns a list of all powers.
-
-**Response Format:**
-\`\`\`json
-[
-  {
-    "id": 1,
-    "name": "super strength",
-    "description": "gives the wielder super-human strengths"
-  }
-]
-\`\`\`
-
-### 4. GET /powers/<int:id>
-Returns detailed information about a specific power.
-
-**Response Format:**
-\`\`\`json
-{
-  "id": 1,
-  "name": "super strength",
-  "description": "gives the wielder super-human strengths"
-}
-\`\`\`
-
-### 5. PATCH /powers/<int:id>
-Updates a power's description.
-
-**Request Body:**
-\`\`\`json
-{
-  "description": "Valid Updated Description"
-}
-\`\`\`
-
-**Response Format:**
-\`\`\`json
-{
-  "id": 1,
-  "name": "super strength",
-  "description": "Valid Updated Description"
-}
-\`\`\`
-
-### 6. POST /hero_powers
-Creates a new hero-power relationship.
-
-**Request Body:**
-\`\`\`json
-{
-  "strength": "Average",
-  "power_id": 1,
-  "hero_id": 3
-}
-\`\`\`
-
-**Response Format:**
-\`\`\`json
-{
-  "id": 11,
-  "hero_id": 3,
-  "power_id": 1,
-  "strength": "Average",
-  "hero": {
-    "id": 3,
-    "name": "Gwen Stacy",
-    "super_name": "Spider-Gwen"
-  },
-  "power": {
-    "id": 1,
-    "name": "super strength",
-    "description": "gives the wielder super-human strengths"
-  }
-}
-\`\`\`
+- CRUD operations for heroes and powers
+- Many-to-many relationship between heroes and powers
+- Data validation for power descriptions and hero-power strength levels
+- JSON API responses
+- SQLite database with SQLAlchemy ORM
 
 ## Setup Instructions
 
-1. **Clone the repository**
-   \`\`\`bash
-   git clone <repository-url>
-   cd superhero-api
-   \`\`\`
-
-2. **Create virtual environment**
+1. Clone this repository
+2. Create a virtual environment:
    \`\`\`bash
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    \`\`\`
 
-3. **Install dependencies**
+3. Install dependencies:
    \`\`\`bash
    pip install -r requirements.txt
    \`\`\`
 
-4. **Run the application**
+4. Initialize the database:
    \`\`\`bash
-   python run.py
+   python init_db.py
+   \`\`\`
+
+5. Seed the database with sample data:
+   \`\`\`bash
+   python seed.py
+   \`\`\`
+
+6. Run the application:
+   \`\`\`bash
+   python app.py
    \`\`\`
 
 The API will be available at `http://localhost:5555`
 
-## Testing with Postman
+## API Endpoints
 
-1. Import the provided `challenge-2-superheroes.postman_collection.json` file into Postman
-2. The collection contains all 6 required endpoints
-3. Run the requests to test the API functionality
+- `GET /heroes` - Get all heroes
+- `GET /heroes/<id>` - Get a specific hero with their powers
+- `GET /powers` - Get all powers
+- `GET /powers/<id>` - Get a specific power
+- `PATCH /powers/<id>` - Update a power's description
+- `POST /hero_powers` - Create a new hero-power relationship
 
-## Testing with Python Scripts
+## Database Schema
 
-Run the test scripts to verify functionality:
+The application uses three main models:
+- **Hero**: Represents a superhero with name and super_name
+- **Power**: Represents a superpower with name and description
+- **HeroPower**: Junction table linking heroes to powers with strength level
 
-\`\`\`bash
-# Test all Postman collection endpoints
-python test_postman_endpoints.py
+## Validations
 
-# Test validation scenarios
-python test_validation.py
-\`\`\`
+- Power descriptions must be at least 20 characters long
+- HeroPower strength must be one of: 'Strong', 'Weak', 'Average'
 
-## Validation Rules
 
-- **HeroPower strength**: Must be one of 'Strong', 'Weak', or 'Average'
-- **Power description**: Must be present and at least 20 characters long
-- **Hero and Power**: Must exist when creating relationships
+## Testing the API with Postman
 
-## Error Handling
+You can use [Postman](https://www.postman.com/) to interact with the API endpoints. Here’s how to test creating and updating resources:
 
-The API returns appropriate HTTP status codes and error messages:
-- `404` for not found resources
-- `400` for validation errors with `{"errors": ["validation errors"]}`
-- `500` for server errors
+### Example: Creating a Power
 
-## Technologies Used
+1. **Set the request method:** `POST`
+2. **Set the URL:** `http://localhost:5555/powers`
+3. **Go to the Body tab:**  
+  - Select **raw**
+  - Choose **JSON** as the format
+  - Paste the following JSON:
+  ```json
+  {
+    "name": "super strength",
+    "description": "gives the wielder incredible physical strength beyond normal human limits"
+  }
+  ```
 
-- **Flask**: Web framework
-- **SQLAlchemy**: ORM for database operations
-- **SQLite**: Database
+### Example: Creating a Hero
 
-## Project Structure
+- **POST** `http://localhost:5555/heroes`
+- Body:
+  ```json
+  {
+   "name": "Peter Parker",
+   "super_name": "Spider-Man"
+  }
+  ```
 
-\`\`\`
-superhero-api/
-├── app.py                    # Main application with models
-├── routes.py                 # API routes
-├── seed.py                   # Database seeding
-├── run.py                    # Application runner
-├── test_postman_endpoints.py # Postman collection tests
-├── test_validation.py        # Validation tests
-├── requirements.txt          # Dependencies
-└── README.md                # This file
-\`\`\`
+### Example: Creating a HeroPower Relationship
 
-## Author
+- **POST** `http://localhost:5555/hero_powers`
+- Body:
+  ```json
+  {
+   "strength": "Strong",
+   "hero_id": 1,
+   "power_id": 1
+  }
+  ```
 
-[Your Name]
+### Example: Updating a Power
 
-## License
+- **PATCH** `http://localhost:5555/powers/1`
+- Body:
+  ```json
+  {
+   "description": "Updated description that is much longer than twenty characters to meet requirements"
+  }
+  ```
 
-This project is licensed under the MIT License.
+> **Note:** The app uses `force=True` to parse JSON, so requests will work even if the `Content-Type` header is not set to `application/json`.
+

@@ -1,24 +1,37 @@
-from app import app, db, Hero, Power, HeroPower
-from random import choice as rc
+import sys
+import os
 
-def seed_database():
+# Add the current directory to Python path
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from flask import Flask
+from models import db, Hero, Power, HeroPower
+
+# Create a minimal Flask app for seeding
+app = Flask(__name__)
+
+# Use absolute path for better compatibility
+db_path = os.path.abspath(os.path.join(os.getcwd(), "Superheroes", "superheroes.db"))
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+def ensure_directory_exists():
+    superheroes_dir = os.path.join(os.getcwd(), "Superheroes")
+    if not os.path.exists(superheroes_dir):
+        os.makedirs(superheroes_dir)
+
+def seed_data():
+    ensure_directory_exists()
+    print(f"Using database at: {db_path}")
     with app.app_context():
-        print("Clearing db...")
+        db.init_app(app)
+        
+        # Clear existing data
         HeroPower.query.delete()
-        Power.query.delete()
         Hero.query.delete()
-
-        print("Seeding powers...")
-        powers = [
-            Power(name="super strength", description="gives the wielder super-human strengths"),
-            Power(name="flight", description="gives the wielder the ability to fly through the skies at supersonic speed"),
-            Power(name="super human senses", description="allows the wielder to use her senses at a super-human level"),
-            Power(name="elasticity", description="can stretch the human body to extreme lengths"),
-        ]
-
-        db.session.add_all(powers)
-
-        print("Seeding heroes...")
+        Power.query.delete()
+        
+        # Create heroes
         heroes = [
             Hero(name="Kamala Khan", super_name="Ms. Marvel"),
             Hero(name="Doreen Green", super_name="Squirrel Girl"),
@@ -29,23 +42,39 @@ def seed_database():
             Hero(name="Jean Grey", super_name="Dark Phoenix"),
             Hero(name="Ororo Munroe", super_name="Storm"),
             Hero(name="Kitty Pryde", super_name="Shadowcat"),
-            Hero(name="Elektra Natchios", super_name="Elektra"),
+            Hero(name="Elektra Natchios", super_name="Elektra")
         ]
-
-        db.session.add_all(heroes)
-
-        print("Adding powers to heroes...")
-        strengths = ["Strong", "Weak", "Average"]
-        hero_powers = []
+        
+        # Create powers
+        powers = [
+            Power(name="super strength", description="gives the wielder super-human strengths"),
+            Power(name="flight", description="gives the wielder the ability to fly through the skies at supersonic speed"),
+            Power(name="super human senses", description="allows the wielder to use her senses at a super-human level"),
+            Power(name="elasticity", description="can stretch the human body to extreme lengths")
+        ]
+        
+        # Add to database
         for hero in heroes:
-            power = rc(powers)
-            hero_powers.append(
-                HeroPower(hero=hero, power=power, strength=rc(strengths))
-            )
-        db.session.add_all(hero_powers)
+            db.session.add(hero)
+        
+        for power in powers:
+            db.session.add(power)
+        
         db.session.commit()
+        
+        # Create some hero-power relationships
+        hero_powers = [
+            HeroPower(strength="Strong", hero_id=1, power_id=2),
+            HeroPower(strength="Average", hero_id=2, power_id=1),
+            HeroPower(strength="Weak", hero_id=3, power_id=3),
+        ]
+        
+        for hero_power in hero_powers:
+            db.session.add(hero_power)
+        
+        db.session.commit()
+        
+        print("Database seeded successfully!")
 
-        print("Done seeding!")
-
-if __name__ == '__main__':
-    seed_database()
+if __name__ == "__main__":
+    seed_data()
