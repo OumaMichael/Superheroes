@@ -16,10 +16,10 @@ db.init_app(app)
 # Helper function to handle JSON requests - FIXED VERSION
 def get_json_data():
     try:
-        # Try to get JSON data regardless of content type
+        # Trying to get JSON data regardless of content type
         data = request.get_json(force=True)
         if data is None:
-            # If that fails, try to parse manually
+            # If that fails, trying to parse manually
             raw_data = request.get_data(as_text=True)
             if raw_data:
                 import json
@@ -56,7 +56,7 @@ def create_hero():
         if error:
             return make_response(jsonify({'errors': [error]}), 400)
         
-        # Validate required fields
+        # Validating required fields
         name = data.get('name', '').strip()
         super_name = data.get('super_name', '').strip()
         
@@ -66,7 +66,7 @@ def create_hero():
         if not super_name:
             return make_response(jsonify({'errors': ['super_name is required and cannot be empty']}), 400)
         
-        # Create new hero
+        # Creating new hero
         new_hero = Hero(name=name, super_name=super_name)
         
         db.session.add(new_hero)
@@ -193,7 +193,7 @@ def create_power():
         if error:
             return make_response(jsonify({'errors': [error]}), 400)
         
-        # Validate required fields
+        # Validating required fields
         name = data.get('name', '').strip()
         description = data.get('description', '').strip()
         
@@ -206,7 +206,7 @@ def create_power():
         if len(description) < 20:
             return make_response(jsonify({'errors': ['description must be at least 20 characters long']}), 400)
         
-        # Create new power
+        # Creating new power
         new_power = Power(name=name, description=description)
         
         db.session.add(new_power)
@@ -340,7 +340,7 @@ def create_hero_power():
         if error:
             return make_response(jsonify({'errors': [error]}), 400)
         
-        # Validate required fields
+        # Validating required fields
         strength = data.get('strength', '').strip()
         hero_id = data.get('hero_id')
         power_id = data.get('power_id')
@@ -357,7 +357,7 @@ def create_hero_power():
         if not power_id:
             return make_response(jsonify({'errors': ['power_id is required']}), 400)
         
-        # Check if hero and power exist
+        # Checking if hero and power exist
         hero = Hero.query.get(hero_id)
         power = Power.query.get(power_id)
         
@@ -367,7 +367,7 @@ def create_hero_power():
         if not power:
             return make_response(jsonify({'errors': [f'Power with id {power_id} not found']}), 400)
         
-        # Create new hero power
+        # Creating new hero power
         new_hero_power = HeroPower(
             strength=strength,
             hero_id=hero_id,
@@ -497,7 +497,7 @@ def delete_hero_power(id):
         db.session.rollback()
         return make_response(jsonify({'error': f'Error deleting hero power: {str(e)}'}), 500)
 
-# Debug route
+# Debugging route
 @app.route('/debug', methods=['POST'])
 def debug():
     return jsonify({

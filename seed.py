@@ -1,16 +1,16 @@
 import sys
 import os
 
-# Add the current directory to Python path
+# Adding the current directory to Python path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from flask import Flask
 from models import db, Hero, Power, HeroPower
 
-# Create a minimal Flask app for seeding
+# Creating a minimal Flask app for seeding
 app = Flask(__name__)
 
-# Use absolute path for better compatibility
+# Using absolute path for better compatibility
 db_path = os.path.abspath(os.path.join(os.getcwd(), "Superheroes", "superheroes.db"))
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -26,12 +26,12 @@ def seed_data():
     with app.app_context():
         db.init_app(app)
         
-        # Clear existing data
+        # Clearing existing data
         HeroPower.query.delete()
         Hero.query.delete()
         Power.query.delete()
         
-        # Create heroes
+        # Creating heroes
         heroes = [
             Hero(name="Kamala Khan", super_name="Ms. Marvel"),
             Hero(name="Doreen Green", super_name="Squirrel Girl"),
@@ -45,7 +45,7 @@ def seed_data():
             Hero(name="Elektra Natchios", super_name="Elektra")
         ]
         
-        # Create powers
+        # Creating powers
         powers = [
             Power(name="super strength", description="gives the wielder super-human strengths"),
             Power(name="flight", description="gives the wielder the ability to fly through the skies at supersonic speed"),
@@ -53,7 +53,7 @@ def seed_data():
             Power(name="elasticity", description="can stretch the human body to extreme lengths")
         ]
         
-        # Add to database
+        # Adding to database
         for hero in heroes:
             db.session.add(hero)
         
@@ -62,7 +62,7 @@ def seed_data():
         
         db.session.commit()
         
-        # Create some hero-power relationships
+        # Creating hero-power relationships
         hero_powers = [
             HeroPower(strength="Strong", hero_id=1, power_id=2),
             HeroPower(strength="Average", hero_id=2, power_id=1),

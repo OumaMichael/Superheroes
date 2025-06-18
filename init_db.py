@@ -1,16 +1,16 @@
 import sys
 import os
 
-# Add the current directory to Python path
+# Adding the current directory to Python path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from flask import Flask
 from models import db
 
-# Create a minimal Flask app for database initialization
+# Creating a minimal Flask app for database initialization
 app = Flask(__name__)
 
-# Use absolute path for better compatibility
+# Using absolute path for better compatibility
 db_path = os.path.abspath(os.path.join(os.getcwd(), "Superheroes", "superheroes.db"))
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
